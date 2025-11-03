@@ -1,11 +1,12 @@
 package guru.springframework.spring6webclient.client;
 
-import static org.awaitility.Awaitility.await;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.awaitility.Awaitility.await;
 
 @SpringBootTest
 class BeerClientImplTest {
@@ -58,6 +59,19 @@ class BeerClientImplTest {
       atomicBoolean.set(true);
     });
 
+    await().untilTrue(atomicBoolean);
+  }
+
+  @Test
+  void testGetBeerById() {
+    AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+
+    client.listBeerDtos()
+            .flatMap(dto -> client.getBeerById(dto.getId()))
+            .subscribe(byIdDto -> {
+              System.out.println(byIdDto.getBeerName());
+              atomicBoolean.set(true);
+            });
     await().untilTrue(atomicBoolean);
   }
 }
